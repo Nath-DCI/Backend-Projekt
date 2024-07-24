@@ -17,7 +17,7 @@ const UserSchema = new Schema({
   activationLink: {
     type: String,
   },
-  orders: [{ type: Schema.Types.ObjectId, ref: "Cart" }],
+  orders: { type: Schema.Types.ObjectId, ref: "Cart" },
 });
 
 export default model("User", UserSchema);

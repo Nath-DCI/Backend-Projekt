@@ -1,4 +1,7 @@
-import { serviceAddToCart } from "../service/cart-service.js";
+import {
+  serviceAddToCart,
+  serviceUpdateCart,
+} from "../service/cart-service.js";
 import Cart from "../models/cart-model.js";
 import User from "../models/user-model.js";
 
@@ -16,29 +19,31 @@ export const addToCart = async (req, res) => {
 export async function getCart(req, res) {
   try {
     const { email } = req.body;
-    const user = await User.findOne({ email });
-    const cart = await Cart.findOne({ user });
+    const user = await User.findOne({ email }).populate("orders");
+    const cart = await Cart.findOne({ user }).populate("products.product");
     res.status(200).json(cart);
   } catch (error) {
     console.error(error);
   }
 }
+
 export async function updateCart(req, res, next) {
   try {
     const updates = req.body;
     const { email } = req.params;
     const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
     const cart = await Cart.findOne({ user: user._id });
     if (!cart) {
-      throw new Error("Cart not found");
+      return res.status(404).json({ error: "Cart not found" });
     }
-
-    const updatedCart = await Cart.findByIdAndUpdate(cart.id, updates, {
-      new: true,
-    });
+    const updatedCart = await serviceUpdateCart(cart, updates);
     res.status(200).json(updatedCart);
   } catch (e) {
     console.log(e);
+    res.status(500).json({ error: "Failed to update cart" });
   }
 }
 
@@ -56,10 +61,7 @@ export async function deleteCart(req, res) {
     }
 
     await Cart.deleteOne({ _id: cart._id });
-
-    user.orders = user.orders.filter(
-      (orderId) => orderId.toString() !== cart._id.toString()
-    );
+    user.orders = null;
     await user.save();
 
     res.status(200).json({ message: "Cart deleted successfully" });

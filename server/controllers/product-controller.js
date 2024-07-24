@@ -33,7 +33,7 @@ export async function updateProduct(req, res, next) {
     const updates = req.body;
     const { article } = req.params;
     const productData = await serviceUpdateProduct(updates, article);
-    return res.json(productData);
+    res.json(productData);
   } catch (e) {
     console.log(e);
   }

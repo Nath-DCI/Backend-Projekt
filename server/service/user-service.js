@@ -10,6 +10,10 @@ import {
   findToken,
 } from "./token-service.js";
 
+export async function findUserByEmail(email) {
+  return User.findOne({ email });
+}
+
 export async function userServiceRegistration(email, password) {
   const candidate = await User.findOne({ email });
   if (candidate) {
@@ -55,7 +59,6 @@ export async function userServiceActivate(activationLink) {
 
 export async function userServiceLogin(email, password) {
   const user = await User.findOne({ email: email });
-  console.log(user);
   if (!user) {
     throw new Error("Cannot find user");
   }
