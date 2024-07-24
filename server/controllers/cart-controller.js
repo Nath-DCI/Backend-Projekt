@@ -18,9 +18,27 @@ export async function getCart(req, res) {
     const { email } = req.body;
     const user = await User.findOne({ email });
     const cart = await Cart.findOne({ user });
-    cart.res.status(200).json(cart);
+    res.status(200).json(cart);
   } catch (error) {
     console.error(error);
+  }
+}
+export async function updateCart(req, res, next) {
+  try {
+    const updates = req.body;
+    const { email } = req.params;
+    const user = await User.findOne({ email });
+    const cart = await Cart.findOne({ user: user._id });
+    if (!cart) {
+      throw new Error("Cart not found");
+    }
+
+    const updatedCart = await Cart.findByIdAndUpdate(cart.id, updates, {
+      new: true,
+    });
+    res.status(200).json(updatedCart);
+  } catch (e) {
+    console.log(e);
   }
 }
 
