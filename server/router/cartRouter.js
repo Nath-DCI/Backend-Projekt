@@ -4,6 +4,7 @@ import {
   getCart,
   deleteCart,
   updateCart,
+  deleteFromCart,
 } from "../controllers/cart-controller.js";
 import { sendInvoice } from "../service/mail-service.js";
 import User from "../models/user-model.js";
@@ -14,8 +15,9 @@ const cartRouter = express.Router();
 
 cartRouter.post("/addToCart", addToCart);
 
-cartRouter.get("/getCart", getCart);
+cartRouter.get("/getCart/:email", getCart);
 cartRouter.delete("/deleteCart", deleteCart);
+cartRouter.delete("/deleteFromCart/:email", deleteFromCart);
 cartRouter.put("/updateCart/:email", updateCart);
 //cartRouter.get("/sendCart", sendCart);
 
